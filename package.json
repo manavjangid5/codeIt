@@ -29,6 +29,7 @@
     "server:dev": "nodemon server.js",
     "server:prod": "node server.js"
   },
+  
   "eslintConfig": {
     "extends": [
       "react-app",
