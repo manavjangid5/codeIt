@@ -8,5 +8,5 @@ export const initSocket = () => {
     transports: ["websocket"],
   };
 
-  return io(options); // ✅ no URL needed
+  return io(options); 
 };
