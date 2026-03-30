@@ -7,6 +7,9 @@ const ACTIONS = require('./src/Actions');
 const app = express();
 
 const server=http.createServer(app);
+const cors = require("cors");
+app.use(cors());  
+app.use(express.json());
 
 const io = new Server(server, {
   cors: {
@@ -14,6 +17,39 @@ const io = new Server(server, {
   },
 });
 
+app.post("/run", async (req, res) => {
+  try {
+    const { code, language, input } = req.body;
+
+    const response = await fetch("https://api.jdoodle.com/v1/execute", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        clientId: "262dec76ad1461ceca4cb7143652fe98",
+        clientSecret: "97aa85cf7a142d7ee8f7f1a981a631476bc59cc7a447c018c7e42f1ecf08a9b2",
+        script: code,
+        language: language,
+        versionIndex: "0",
+        stdin: input,
+      }),
+    });
+
+    const text = await response.text();
+
+    try {
+      const data = JSON.parse(text);
+      res.json(data);
+    } catch {
+      console.error("Non-JSON response:", text);
+      res.status(500).json({ error: "Invalid response from API" });
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 
 app.use(express.static('build'));
@@ -76,6 +112,8 @@ io.on('connection', (socket) => {
         socket.leave();
     });
 });
+
+
 
 const PORT=process.env.PORT || 5000
 server.listen(PORT, ()=>

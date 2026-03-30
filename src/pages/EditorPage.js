@@ -5,6 +5,9 @@ import { useLocation, useNavigate, Navigate, useParams } from 'react-router-dom'
 import Editor from '../components/Editor';
 import { initSocket } from '../socket';
 import ACTIONS from '../Actions';
+import DropButton from '../components/DropButton';
+import CustomButton from '../components/CustomButton';
+import { CaretRightFilled } from '@ant-design/icons';
 const EditorPage = () => {
     const {roomId} = useParams();
     const socketRef=useRef(null);
@@ -12,6 +15,8 @@ const EditorPage = () => {
     const reactNavigator=useNavigate();
     const [clients, setClients] = useState([]);
     const codeRef=useRef(null);
+    const [selectedLang, setSelectedLang] = useState({name: "C++", language: "cpp"});
+    const [input, setInput] = useState("");
     useEffect(()=>{
         const init=async () => {
             
@@ -33,7 +38,6 @@ const EditorPage = () => {
             // Listening for joined  event 
             socketRef.current.on(ACTIONS.JOINED, ({clients, username, socketId})=>{
                 //notifying all other users.
-                console.log("Hi")
                 if(username!==location.state?.username)
                 {
                     toast.success(`${username} joined the room.`);
@@ -64,6 +68,33 @@ const EditorPage = () => {
         }
     },[]);
 
+    const runCode = async () => {
+        try {
+            const code = codeRef.current;
+
+            const response = await fetch("/run", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                code,
+                language: selectedLang.language,
+                input,
+            }),
+            });
+
+            const data = await response.json();
+
+            console.log(data);
+
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    const handleRunClick=  ()=>{
+        runCode();
+    }
     async function copyRoomId(){
         try {
             await navigator.clipboard.writeText(roomId);
@@ -101,7 +132,46 @@ const EditorPage = () => {
             <button className='btn leaveBtn' onClick={leaveRoom}>Leave</button>
         </div>
         <div className='editorWrap'>
-            <Editor socketRef={socketRef} roomId={roomId} onCodeChange={(code)=>{codeRef.current=code}}/>
+            <div className="editorToolbar">
+                <DropButton items={[
+                                    { name: "JavaScript", language: "nodejs" },  
+                                    { name: "Python", language: "python3" },   
+                                    { name: "Java", language: "java" },          
+                                    { name: "C++", language: "cpp17" },   
+                                ]} 
+                buttonName={selectedLang?.name || "Select Language"}
+                setSelectedLang={setSelectedLang}
+                overlayStyle={{ zIndex: 9999 }}/>
+
+                <CustomButton
+                    label={
+                        <>
+                        <CaretRightFilled style={{ color: "#4aed88", marginRight: "6px" }} />
+                        Run
+                        </>
+                    }
+                    onClick={handleRunClick}
+                />
+            </div>
+            <div className="editorMain">
+                <div className="editorLeft">
+                    <Editor
+                    socketRef={socketRef}
+                    roomId={roomId}
+                    onCodeChange={(code) => { codeRef.current = code }}
+                    />
+                </div>
+
+                <div className="editorRight">
+                    <textarea 
+                        className="inputBoxArea" 
+                        placeholder="Input..."
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)} 
+                    />
+                    <textarea className="outputBoxArea" placeholder="Output..." />
+                </div>
+            </div>
         </div>
     </div>
   )

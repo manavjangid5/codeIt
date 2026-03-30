@@ -86,10 +86,14 @@ footer a:hover{
   border-color: #2b824c;
 }
 
+/* ✅ FIXED */
 .mainWrap{
   display: grid;
   grid-template-columns: 230px 1fr;
+  height: 100vh;       /* ✅ ADDED */
+  overflow: hidden;    /* ✅ ADDED */
 }
+
 .aside{
   background: #1c1e29;
   padding: 16px;
@@ -100,6 +104,7 @@ footer a:hover{
 .asideInner{
   flex: 1;
 }
+
 .clientsList{
   display: flex;
   align-items: center;
@@ -123,9 +128,77 @@ footer a:hover{
   margin-top: 20px;
   background: #4aed88;
 }
+
 .CodeMirror{
   font-size: 16px;
-  min-height: calc(100vh - 20px);
-  line-height: 1.6;
+  height: 100%;       
+  min-height: 0;       
+  line-height: 1.4;
   padding-top: 20px;
+  border: none;
+  border-radius: 6px;
+}
+
+.editorToolbar {
+  display: flex;              
+  align-items: center;       
+  gap: 10px;     
+  background: #1c1e29;        
+}
+.editorWrap {
+  display: flex;          
+  flex-direction: column; 
+  height: 100%;               
+  overflow: hidden;           
+}
+
+.editorMain {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  margin: 8px;
+  overflow: hidden;          
+}
+
+.editorLeft {
+  flex: 3;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.editorLeft .CodeMirror {
+  flex: 1;
+  height: 100% !important;
+  /* overflow: auto !important;   */
+}
+
+.editorRight {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #1c1e29;
+  height: 100%;
+  overflow: hidden;           /* ✅ ADDED */
+}
+
+.inputBoxArea,
+.outputBoxArea {
+  flex: 1;
+  background: #2a2d3a;
+  color: #eee;
+  border: none;
+  border-radius: 6px;
+  resize: none;
+  font-size: 14px;
+  padding: 8px;
+  margin-left: 8px;
+  margin-right: 8px;
+
+  overflow: auto;             /* ✅ ADDED */
+  min-height: 0;              /* ✅ ADDED (VERY IMPORTANT) */
+}
+
+.outputBoxArea{
+  margin-top: 8px;
 }
