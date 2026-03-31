@@ -8,6 +8,7 @@ import ACTIONS from '../Actions';
 import DropButton from '../components/DropButton';
 import CustomButton from '../components/CustomButton';
 import { CaretRightFilled } from '@ant-design/icons';
+import LoadSpin from '../components/LoadSpin';
 const EditorPage = () => {
     const {roomId} = useParams();
     const socketRef=useRef(null);
@@ -17,6 +18,8 @@ const EditorPage = () => {
     const codeRef=useRef(null);
     const [selectedLang, setSelectedLang] = useState({name: "C++", language: "cpp"});
     const [input, setInput] = useState("");
+    const [output, setOutput] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     useEffect(()=>{
         const init=async () => {
             
@@ -69,25 +72,28 @@ const EditorPage = () => {
     },[]);
 
     const runCode = async () => {
+        setIsLoading(true);
         try {
             const code = codeRef.current;
 
             const response = await fetch("/run", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                code,
-                language: selectedLang.language,
-                input,
-            }),
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    code,
+                    language: selectedLang.language,
+                    input,
+                }),
             });
 
+            
             const data = await response.json();
-
+            if(data)
+                setIsLoading(false);
             console.log(data);
-
+            setOutput(data.output);
         } catch (err) {
             console.error(err);
         }
@@ -145,13 +151,15 @@ const EditorPage = () => {
 
                 <CustomButton
                     label={
+                        !isLoading ?
                         <>
                         <CaretRightFilled style={{ color: "#4aed88", marginRight: "6px" }} />
                         Run
-                        </>
+                        </> : <LoadSpin/>
                     }
                     onClick={handleRunClick}
                 />
+                
             </div>
             <div className="editorMain">
                 <div className="editorLeft">
@@ -169,7 +177,11 @@ const EditorPage = () => {
                         value={input}
                         onChange={(e) => setInput(e.target.value)} 
                     />
-                    <textarea className="outputBoxArea" placeholder="Output..." />
+                    <textarea 
+                        className="outputBoxArea" 
+                        placeholder="Output..." 
+                        value={output}
+                    />
                 </div>
             </div>
         </div>

@@ -19,7 +19,7 @@ const useStyles = createStyles(() => ({
     cursor: 'pointer',
     color: '#eee',
     borderRadius: '6px',
-    fontSize: '13px',
+    fontSize: '14px',
     transition: 'all 0.2s ease',
 
     ':hover': {

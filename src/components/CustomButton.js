@@ -13,7 +13,7 @@ const useStyles = createStyles(() => ({
     alignItems: 'center',
     padding: '0 10px',
     cursor: 'pointer',
-    fontSize: '13px',
+    fontSize: '14px',
 
     ':hover': {
       backgroundColor: '#2a2d3a !important', // same as dropdown button
